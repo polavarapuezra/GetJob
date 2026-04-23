@@ -83,7 +83,11 @@ body {
   align-items: center;
   justify-content: center;
   padding: 2rem 1rem;
-  background: linear-gradient(135deg, #e8f0fe 0%, #f4f6fb 60%);
+  background-image: url("https://res.cloudinary.com/dkho9wtji/image/upload/v1776949509/Gemini_Generated_Image_yh0581yh0581yh05_ok2bko.png");
+  width:100vw;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .auth-card {
