@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}Verify Email — GetJob Portal{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card">
+
+    <div class="auth-logo">Get<span>Job</span></div>
+    <p class="auth-tagline">Email Verification</p>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="alert alert-{{ 'danger' if cat == 'error' else 'success' }} py-2 mb-3
+                    text-center" role="alert" style="font-size:0.9rem;">
+          {{ msg }}
+        </div>
+      {% endfor %}
+    {% endwith %}
+
+    <div class="otp-icon mb-3">📧</div>
+    <p class="otp-info">
+      We've sent a <strong>6-digit OTP</strong> to<br>
+      <span class="otp-email">{{ email }}</span>
+    </p>
+
+    <!-- Verify form -->
+    <form method="POST" action="{{ url_for('verify_otp') }}" id="otpForm">
+      <input type="hidden" name="action" value="verify" id="formAction" />
+
+      <label class="gj-label">Enter OTP</label>
+      <div class="otp-inputs mb-4" id="otpBoxes">
+        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" />
+        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" />
+        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" />
+        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" />
+        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" />
+        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" />
+        <!-- Hidden combined field submitted to Flask -->
+        <input type="hidden" name="otp" id="otpHidden" />
+      </div>
+
+      <button type="submit" class="btn-gj-primary w-100 mb-3"
+              onclick="combineOtp()">Verify OTP</button>
+    </form>
+
+    <!-- Timer & Resend -->
+    <p class="otp-timer-text text-center">
+      Resend OTP in <span id="countdown" class="fw-bold text-primary">4:59</span>
+    </p>
+
+    <form method="POST" action="{{ url_for('verify_otp') }}" id="resendForm">
+      <input type="hidden" name="action" value="resend" />
+      <button type="submit" class="btn-gj-ghost w-100" id="resendBtn" disabled>
+        Resend OTP
+      </button>
+    </form>
+
+    <p class="auth-switch mt-3">
+      Wrong email? <a href="{{ url_for('register') }}">Go back</a>
+    </p>
+  </div>
+</div>
+
+<style>
+.otp-icon  { font-size: 2.8rem; text-align: center; }
+.otp-info  { text-align: center; color: #555; margin-bottom: 1.2rem; line-height: 1.6; }
+.otp-email { color: #1a73e8; font-weight: 600; word-break: break-all; }
+
+/* 6 individual OTP boxes */
+.otp-inputs {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.otp-box {
+  width: 48px; height: 56px;
+  border: 2px solid #d0d7de;
+  border-radius: 8px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  color: #1a73e8;
+  outline: none;
+  transition: border-color .2s;
+}
+.otp-box:focus { border-color: #1a73e8; box-shadow: 0 0 0 3px rgba(26,115,232,.15); }
+
+.otp-timer-text { font-size: 0.88rem; color: #777; }
+
+/* Ghost (disabled) button */
+.btn-gj-ghost {
+  background: transparent;
+  border: 2px solid #d0d7de;
+  border-radius: 8px;
+  padding: 10px;
+  font-weight: 600;
+  color: #777;
+  cursor: not-allowed;
+  transition: all .2s;
+}
+.btn-gj-ghost:not([disabled]) {
+  border-color: #1a73e8;
+  color: #1a73e8;
+  cursor: pointer;
+}
+.btn-gj-ghost:not([disabled]):hover {
+  background: #f0f6ff;
+}
+</style>
+
+<script>
+/* ── Auto-advance between OTP boxes ─────────────────────── */
+const boxes = document.querySelectorAll(".otp-box");
+
+boxes.forEach((box, i) => {
+  box.addEventListener("input", () => {
+    box.value = box.value.replace(/\D/, "");   // digits only
+    if (box.value && i < boxes.length - 1) boxes[i + 1].focus();
+  });
+  box.addEventListener("keydown", e => {
+    if (e.key === "Backspace" && !box.value && i > 0) boxes[i - 1].focus();
+  });
+  box.addEventListener("paste", e => {
+    e.preventDefault();
+    const digits = (e.clipboardData.getData("text") || "").replace(/\D/g, "");
+    digits.split("").slice(0, 6).forEach((d, j) => {
+      if (boxes[i + j]) boxes[i + j].value = d;
+    });
+    const next = Math.min(i + digits.length, 5);
+    boxes[next].focus();
+  });
+});
+
+/* Combine 6 boxes → hidden field before submit */
+function combineOtp() {
+  document.getElementById("otpHidden").value =
+    [...boxes].map(b => b.value).join("");
+}
+
+/* ── Countdown timer (5 min) ────────────────────────────── */
+let total = 299;   // 4:59 so first tick shows 4:59
+const countEl  = document.getElementById("countdown");
+const resendBtn = document.getElementById("resendBtn");
+
+const timer = setInterval(() => {
+  if (total <= 0) {
+    clearInterval(timer);
+    countEl.textContent = "0:00";
+    resendBtn.disabled  = false;
+    document.querySelector(".otp-timer-text").style.display = "none";
+    return;
+  }
+  const m = Math.floor(total / 60);
+  const s = String(total % 60).padStart(2, "0");
+  countEl.textContent = `${m}:${s}`;
+  total--;
+}, 1000);
+</script>
+{% endblock %}
