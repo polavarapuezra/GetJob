@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Select Skills — GetJob Portal{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="page-header mb-4">
+        <h2 class="page-title">Select Your Skills</h2>
+        <p class="page-subtitle">Choose the skills you know — we'll find matching jobs from LinkedIn, Naukri, Glassdoor & Indeed.</p>
+      </div>
+      <form method="POST" action="{{ url_for('skills') }}">
+        <div class="skills-box">
+          <div class="skills-chips" id="skillsContainer">
+            {% for skill in all_skills %}
+              <label class="skill-chip-label">
+                <input type="checkbox" name="skills" value="{{ skill }}"
+                  {% if skill in selected %}checked{% endif %}
+                  class="skill-checkbox" />
+                <span class="skill-chip">{{ skill }}</span>
+              </label>
+            {% endfor %}
+          </div>
+          <div class="skills-footer">
+            <span class="selected-count" id="selectedCount">
+              {{ selected|length }} skill{{ 's' if selected|length != 1 else '' }} selected
+            </span>
+            <button type="submit" class="btn-gj-primary px-5">Find Jobs →</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

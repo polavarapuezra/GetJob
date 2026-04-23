@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}GetJob Portal{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body>
+
+{% if session.user_id %}
+<nav class="navbar navbar-expand-lg gj-navbar">
+  <div class="container">
+    <a class="navbar-brand gj-brand" href="{{ url_for('jobs') }}">Get<span>Job</span></a>
+    <div class="d-flex align-items-center gap-3">
+      <a href="{{ url_for('jobs') }}" class="nav-link-custom {% if request.endpoint == 'jobs' %}active{% endif %}">Jobs</a>
+      <a href="{{ url_for('skills') }}" class="nav-link-custom {% if request.endpoint == 'skills' %}active{% endif %}">Skills</a>
+      <a href="{{ url_for('dashboard') }}" class="nav-link-custom {% if request.endpoint == 'dashboard' %}active{% endif %}">Dashboard</a>
+      <div class="gj-avatar">{{ session.user_name[0].upper() }}</div>
+      <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+    </div>
+  </div>
+</nav>
+{% endif %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="container mt-3">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show gj-alert" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+{% block content %}{% endblock %}
+<div style="position:fixed;bottom:18px;left:20px;font-family:'DM Sans',sans-serif;font-size:17px;color:rgba(100,116,139,0.55);letter-spacing:0.4px;pointer-events:none;user-select:none;z-index:9999;">
+      Developed by Polavarapu Ezra
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
