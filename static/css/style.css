@@ -89,6 +89,12 @@ body {
   background-position: center;
   background-repeat: no-repeat;
 }
+@media (max-width: 768px) {
+    .auth-wrapper {
+        background: url("https://res.cloudinary.com/dkho9wtji/image/upload/v1776950172/Gemini_Generated_Image_dh5ox6dh5ox6dh5o_ndunmf.png") no-repeat center;
+        background-size: cover;
+    }
+}
 
 .auth-card {
   background: var(--bg-card);
