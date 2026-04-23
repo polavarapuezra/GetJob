@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Login — GetJob Portal{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-logo">Get<span>Job</span></div>
+    <p class="auth-tagline">Welcome back! Log in to find your next job</p>
+    <form method="POST" action="{{ url_for('login') }}">
+      <div class="mb-3">
+        <label class="gj-label">Email Address</label>
+        <input type="email" name="email" class="gj-input" placeholder="ravi@example.com" required />
+      </div>
+      <div class="mb-4">
+        <label class="gj-label">Password</label>
+        <input type="password" name="password" class="gj-input" placeholder="Your password" required />
+      </div>
+      <button type="submit" class="btn-gj-primary w-100">Login</button>
+    </form>
+    <p class="auth-switch">New here? <a href="{{ url_for('register') }}">Create an account</a></p>
+  </div>
+  <div style="position:fixed;bottom:18px;left:20px;font-family:'DM Sans',sans-serif;font-size:17px;color:rgba(100,116,139,0.55);letter-spacing:0.4px;pointer-events:none;user-select:none;z-index:9999;">
+      Developed by Polavarapu Ezra
+    </div>
+</div>
+{% endblock %}
